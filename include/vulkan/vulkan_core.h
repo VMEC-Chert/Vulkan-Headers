@@ -18,6 +18,24 @@ extern "C" {
 #endif
 
 
+/* NOTE(mallchad): We needed to fix the "module" keyword conflicting in
+ * C++20. And MSVC made trivial #define fixes not allowed. So we're doing
+ * the opposite, forking, fixing the header, and fixing it later in headers
+ * that don't want the fix.
+ *
+ * In my testing we don't need immediate use for this, but it's there incase
+ * somebody (or us)
+ */
+
+#ifdef VK_VMEC_APPLY_MODULE_FIX
+/* We do this backwards define with an empty clause so it isn't visible to
+the compliler by default */
+#else
+    #define vk_module module
+#endif
+
+
+
 
 // VK_VERSION_1_0 is a preprocessor guard. Do not pass it to API calls.
 #define VK_VERSION_1_0 1
@@ -3947,7 +3965,7 @@ typedef struct VkPipelineShaderStageCreateInfo {
     const void*                         pNext;
     VkPipelineShaderStageCreateFlags    flags;
     VkShaderStageFlagBits               stage;
-    VkShaderModule                      module;
+    VkShaderModule                      vk_module;
     const char*                         pName;
     const VkSpecializationInfo*         pSpecializationInfo;
 } VkPipelineShaderStageCreateInfo;
@@ -14385,7 +14403,7 @@ typedef struct VkCuModuleTexturingModeCreateInfoNVX {
 typedef struct VkCuFunctionCreateInfoNVX {
     VkStructureType    sType;
     const void*        pNext;
-    VkCuModuleNVX      module;
+    VkCuModuleNVX      vk_module;
     const char*        pName;
 } VkCuFunctionCreateInfoNVX;
 
@@ -22479,7 +22497,7 @@ typedef struct VkDataGraphPipelineCreateInfoARM {
 typedef struct VkDataGraphPipelineShaderModuleCreateInfoARM {
     VkStructureType                          sType;
     const void*                              pNext;
-    VkShaderModule                           module;
+    VkShaderModule                           vk_module;
     const char*                              pName;
     const VkSpecializationInfo*              pSpecializationInfo;
     uint32_t                                 constantCount;
